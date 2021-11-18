@@ -33,6 +33,7 @@ var (
 			}
 
 			for _, command := range commands {
+				fmt.Println(fmt.Sprintf("command: %+v", command))
 				if dry {
 					continue
 				}
