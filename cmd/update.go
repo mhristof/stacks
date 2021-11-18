@@ -37,5 +37,5 @@ var (
 )
 
 func init() {
-	rootCmd.AddCommand(updateCmd)
+	rootCmd.AddCommand(updateCmd) // nolint
 }

@@ -12,15 +12,18 @@ import (
 )
 
 var (
+	// ErrorDefaultBranchNotFound Error when the default branch is not found.
 	ErrorDefaultBranchNotFound = errors.New("default branch not found")
 )
 
+// Branches Returns a list of all the branches lex sorted.
 func Branches(path string) (ret []string) {
 	all := allbranches(path)
 
 	return all
 }
 
+// Branch Get the current branch or empty if it could not be found.
 func Branch(path string) string {
 	head := filepath.Join(path, ".git/HEAD")
 	if _, err := os.Stat(head); os.IsNotExist(err) {
@@ -35,6 +38,7 @@ func Branch(path string) string {
 	return filepath.Base(strings.Fields(string(branch))[1])
 }
 
+// Rebase return a list of commands to run in order to rebase required branches.
 func Rebase(path, branchName string) (ret []string, err error) {
 	var branches = Branches(path)
 	var branchRE = regexp.MustCompile(branchName)
@@ -88,21 +92,21 @@ func allbranches(path string) (ret []string) {
 		return
 	}
 
-	sort.Sort(ByLength(ret))
+	sort.Sort(byLength(ret))
 
 	return ret
 }
 
-type ByLength []string
+type byLength []string
 
-func (s ByLength) Len() int {
+func (s byLength) Len() int {
 	return len(s)
 }
 
-func (s ByLength) Swap(i, j int) {
+func (s byLength) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
 
-func (s ByLength) Less(i, j int) bool {
+func (s byLength) Less(i, j int) bool {
 	return (s[i]) < (s[j])
 }

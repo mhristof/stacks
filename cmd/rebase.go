@@ -33,7 +33,6 @@ var (
 			}
 
 			for _, command := range commands {
-				fmt.Println(fmt.Sprintf("command: %+v", command))
 				if dry {
 					continue
 				}
@@ -47,5 +46,5 @@ var (
 
 func init() {
 	rebaseCmd.PersistentFlags().StringP("branch", "b", git.Branch("."), "Branch regex to match")
-	rootCmd.AddCommand(rebaseCmd)
+	rootCmd.AddCommand(rebaseCmd) //nolint
 }

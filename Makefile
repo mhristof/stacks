@@ -1,35 +1,35 @@
-#
-# vim:ft=make
-#
-
 MAKEFLAGS += --warn-undefined-variables
-SHELL := bash
+SHELL := /bin/bash
+ifeq ($(word 1,$(subst ., ,$(MAKE_VERSION))),4)
 .SHELLFLAGS := -eu -o pipefail -c
-.DEFAULT_GOAL := all
-.DELETE_ON_ERROR:
+endif
+.DEFAULT_GOAL := help
 .ONESHELL:
 
-GIT_REF := $(shell git rev-parse --short HEAD)
+PACKAGE := $(shell go list)
+GIT_REF := $(shell git describe --match="" --always --dirty=+)
 GIT_TAG := $(shell git name-rev --tags --name-only $(GIT_REF))
 
-.PHONY: all
-all: ./bin/go-stacks.darwin ./bin/go-stacks.linux
-
-./bin/go-stacks.%: $(shell find ./ -name '*.go')
-	GOOS=$* go build -o $@ -ldflags "-X github.com/mhristof/go-stacks/cmd.version=$(GIT_TAG)+$(GIT_REF)" main.go
-
-.PHONY: fast-test
-fast-test:  ## Run fast tests
-	go test ./... -tags fast
+.PHONY: help
+help:  ## Show this help
+	@grep '.*:.*##' Makefile | grep -v grep  | sort | sed 's/:.* ##/:/g' | column -t -s:
 
 .PHONY: test
-test:	## Run all tests
-	go test ./...
+test:  ## Run go test
+	go test -v ./...
 
-.PHONY: clean
-clean:
-	rm -rf bin/go-stacks.*
+bin/go-stacks.darwin:  ## Build the application binary for current OS
 
-.PHONY: help
-help:           ## Show this help.
-	@grep '.*:.*##' Makefile | grep -v grep  | sort | sed 's/:.*## /:/g' | column -t -s:
+bin/go-stacks.%:  ## Build the application binary for target OS, for example bin/go-stacks.linux
+	GOOS=$* go build -o $@ -ldflags "-X $(PACKAGE)/version=$(GIT_TAG)+$(GIT_REF)" main.go
+
+.PHONY: install
+install: bin/go-stacks.darwin ## Install the binary
+	cp $< ~/bin/go-stacks
+
+.git/hooks/pre-commit:  ## Install pre-commit checks
+	pre-commit install
+
+.PHONY: check
+check: .git/hooks/pre-commit ## Run precommit checks
+	pre-commit run --all

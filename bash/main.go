@@ -2,24 +2,26 @@ package bash
 
 import (
 	"bytes"
-	"fmt"
 	"os/exec"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
-func Run(command string) (stdout string, stderr string) {
+// Run Run the bash command and return the stdout and stderr.
+func Run(command string) (stdout string, stderr string, err error) {
+	var stdoutB, stderrB bytes.Buffer
+
 	fields := strings.Fields(command)
 	cmd := exec.Command(fields[0], fields[1:]...)
-	var stdoutB, stderrB bytes.Buffer
 	cmd.Stdout = &stdoutB
 	cmd.Stderr = &stderrB
-	err := cmd.Run()
-	stdout, stderr = string(stdoutB.Bytes()), string(stderrB.Bytes())
+	err = cmd.Run()
+	stdout, stderr = stdoutB.String(), stderrB.String()
+
 	if err != nil {
-		fmt.Println(fmt.Sprintf("command: %+v", command))
-		fmt.Println(fmt.Sprintf("stdout: %+v", stdout))
-		fmt.Println(fmt.Sprintf("stderr: %+v", stderr))
-		panic(err)
+		return stdout, stderr, errors.Wrap(err, "command failed")
 	}
-	return stdout, stderr
+
+	return stdout, stderr, nil
 }

@@ -1,7 +1,6 @@
 package git
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -12,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func mkgit(commands []string) string {
+func mkgit(t *testing.T, commands []string) string {
 	dir, err := ioutil.TempDir("", "git")
 	if err != nil {
 		panic(err)
@@ -23,15 +22,12 @@ func mkgit(commands []string) string {
 		panic(err)
 	}
 
-	fmt.Println(fmt.Sprintf("dir: %+v", dir))
-
-	fmt.Println(fmt.Sprintf("commands: %+v", commands))
-	//fmt.Println(fmt.Sprintf("commands[0]: %+v", commands[0]))
-
 	for _, command := range commands {
-		fmt.Println(fmt.Sprintf("command: %+v", command))
+		_, _, err = bash.Run(command)
+		if err != nil {
+			t.Fatal(err)
+		}
 
-		_, _ = bash.Run(command)
 	}
 	return dir
 }
@@ -44,11 +40,11 @@ func TestBranches(t *testing.T) {
 	}{
 		{
 			name: "non git folder",
-			path: mkgit([]string{}),
+			path: mkgit(t, []string{}),
 		},
 		{
 			name: "git folder with main",
-			path: mkgit([]string{
+			path: mkgit(t, []string{
 				"git init",
 				"git commit --allow-empty -m 'empty.commit'",
 			}),
@@ -58,7 +54,7 @@ func TestBranches(t *testing.T) {
 		},
 		{
 			name: "git folder with a couple of branches",
-			path: mkgit([]string{
+			path: mkgit(t, []string{
 				"git init",
 				"git commit --allow-empty -m 'empty.commit'",
 				"git checkout -b foobar",
@@ -71,7 +67,7 @@ func TestBranches(t *testing.T) {
 	}
 
 	for _, test := range cases {
-		assert.Equal(t, test.branches, Branches(test.path), test.name)
+		assert.Equal(t, test.branches, Branches(test.path), test.name) //nolint
 		defer os.Remove(test.path)
 	}
 }
@@ -86,7 +82,7 @@ func TestRebase(t *testing.T) {
 		{
 			name:   "main ahead of feat1",
 			branch: ".*",
-			path: mkgit([]string{
+			path: mkgit(t, []string{
 				"git init",
 				"git commit --allow-empty -m 'empty.commit'",
 				"git checkout -b feat1",
@@ -102,7 +98,7 @@ func TestRebase(t *testing.T) {
 		{
 			name:   "feat1 ahead of feat1.1",
 			branch: ".*",
-			path: mkgit([]string{
+			path: mkgit(t, []string{
 				"git init",
 				"git commit --allow-empty -m 'empty.commit'",
 				"git commit --allow-empty -m 'empty.commit1'",
@@ -124,7 +120,7 @@ func TestRebase(t *testing.T) {
 		{
 			name:   "no changes",
 			branch: ".*",
-			path: mkgit([]string{
+			path: mkgit(t, []string{
 				"git init",
 				"git commit --allow-empty -m 'empty.commit'",
 				"git commit --allow-empty -m 'empty.commit1'",
@@ -143,7 +139,7 @@ func TestRebase(t *testing.T) {
 		{
 			name:   "limit branch name",
 			branch: "feat1",
-			path: mkgit(strings.Split(heredoc.Doc(`
+			path: mkgit(t, strings.Split(heredoc.Doc(`
 				git init
 				git commit --allow-empty -m 'empty.commit'
 				git commit --allow-empty -m 'empty.commit1'
@@ -168,9 +164,9 @@ func TestRebase(t *testing.T) {
 				* .'empty.commit1'
 				| *  (feat2).'feat2.commit2'
 				| | *  (feat2.1).'feat2.1.commit1'
-				| |/  
+				| |/
 				| * .'feat2.commit1'
-				|/  
+				|/
 				*  (main).'empty.commit1'
 				* .'empty.commit'`),
 		},
@@ -182,18 +178,24 @@ func TestRebase(t *testing.T) {
 			panic(err)
 		}
 
-		commands, err := Rebase(test.path, test.branch)
+		commands, err := Rebase(test.path, test.branch) //nolint
 		if err != nil {
 			panic(err)
 		}
 
 		for _, command := range commands {
-			fmt.Println(fmt.Sprintf("command: %+v", command))
+			_, _, err := bash.Run(command)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-			bash.Run(command)
 		}
-		stdout, _ := bash.Run(`git log --graph --pretty=format:%d.%s --all`)
-		assert.Equal(t, test.gitLog, stdout, test.name)
+		stdout, _, err := bash.Run(`git log --graph --pretty=format:%d.%s --all`)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		assert.Equal(t, test.gitLog, strings.ReplaceAll(stdout, "/  ", "/"), test.name)
 		defer os.Remove(test.path)
 	}
 }
