@@ -13,6 +13,8 @@ builds:
     goos:
       - linux
       - darwin
+    ldflags:
+      - -X github.com/mhristof/go-stacks/version={{.Version}}
 archives:
   - replacements:
       darwin: Darwin
