@@ -15,7 +15,6 @@ var (
 
 func Branches(path string) (ret []string) {
 	all := allbranches(path)
-	sort.Sort(ByLength(all))
 
 	return all
 }
@@ -67,6 +66,8 @@ func allbranches(path string) (ret []string) {
 	if err != nil {
 		return
 	}
+
+	sort.Sort(ByLength(ret))
 
 	return ret
 }

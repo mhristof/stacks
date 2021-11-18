@@ -70,9 +70,10 @@ func TestBranches(t *testing.T) {
 				"git init",
 				"git commit --allow-empty -m 'empty.commit'",
 				"git checkout -b foobar",
+				"git checkout -b foobar1",
 			}),
 			branches: []string{
-				"foobar", "main",
+				"foobar", "foobar1", "main",
 			},
 		},
 	}
