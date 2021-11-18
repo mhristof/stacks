@@ -18,6 +18,7 @@ archives:
   - replacements:
       darwin: Darwin
       linux: Linux
+    format: binary
 checksum:
   name_template: 'checksums.txt'
 snapshot:
