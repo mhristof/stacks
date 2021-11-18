@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/MakeNowJust/heredoc"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -11,9 +12,11 @@ import (
 var version = "devel"
 
 var rootCmd = &cobra.Command{
-	Use:     "go-stacks",
-	Short:   "Command like tool to handle git PR stacks",
-	Long:    `TODO: changeme`,
+	Use:   "go-stacks",
+	Short: "Command like tool to handle git PR stacks",
+	Long: heredoc.Doc(`
+		Auto rebase branches to allow better management of PR stacks
+	`),
 	Version: version,
 	Run: func(cmd *cobra.Command, args []string) {
 		Verbose(cmd)
