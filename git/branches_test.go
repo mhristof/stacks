@@ -1,34 +1,15 @@
 package git
 
 import (
-	"bytes"
 	"fmt"
 	"io/ioutil"
 	"os"
-	"os/exec"
-	"strings"
 	"testing"
 
 	"github.com/MakeNowJust/heredoc"
+	"github.com/mhristof/go-stacks/bash"
 	"github.com/stretchr/testify/assert"
 )
-
-func eval(command string) (stdout string, stderr string) {
-	fields := strings.Fields(command)
-	cmd := exec.Command(fields[0], fields[1:]...)
-	var stdoutB, stderrB bytes.Buffer
-	cmd.Stdout = &stdoutB
-	cmd.Stderr = &stderrB
-	err := cmd.Run()
-	stdout, stderr = string(stdoutB.Bytes()), string(stderrB.Bytes())
-	if err != nil {
-		fmt.Println(fmt.Sprintf("command: %+v", command))
-		fmt.Println(fmt.Sprintf("stdout: %+v", stdout))
-		fmt.Println(fmt.Sprintf("stderr: %+v", stderr))
-		panic(err)
-	}
-	return stdout, stderr
-}
 
 func mkgit(commands []string) string {
 	dir, err := ioutil.TempDir("", "git")
@@ -44,7 +25,7 @@ func mkgit(commands []string) string {
 	fmt.Println(fmt.Sprintf("dir: %+v", dir))
 
 	for _, command := range commands {
-		eval(command)
+		_, _ := bash.Run(command)
 	}
 	return dir
 }
@@ -163,9 +144,9 @@ func TestRebase(t *testing.T) {
 		}
 
 		for _, command := range commands {
-			eval(command)
+			bash.Run(command)
 		}
-		stdout, _ := eval(`git log --graph --pretty=format:%d.%s --all`)
+		stdout, _ := bash.Run(`git log --graph --pretty=format:%d.%s --all`)
 		assert.Equal(t, test.gitLog, stdout, test.name)
 	}
 }
