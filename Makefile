@@ -25,7 +25,7 @@ bin/go-stacks.%:  ## Build the application binary for target OS, for example bin
 
 .PHONY: install
 install: bin/go-stacks.darwin ## Install the binary
-	cp $< ~/bin/go-stacks
+	cp $< ~/bin/stacks
 
 .git/hooks/pre-commit:  ## Install pre-commit checks
 	pre-commit install
