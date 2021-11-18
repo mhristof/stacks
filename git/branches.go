@@ -3,8 +3,10 @@ package git
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 )
@@ -19,9 +21,24 @@ func Branches(path string) (ret []string) {
 	return all
 }
 
-func Rebase(path string) (ret []string, err error) {
-	var onto string
+func Branch(path string) string {
+	head := filepath.Join(path, ".git/HEAD")
+	if _, err := os.Stat(head); os.IsNotExist(err) {
+		return ""
+	}
+
+	branch, err := ioutil.ReadFile(head)
+	if err != nil {
+		return ""
+	}
+
+	return filepath.Base(strings.Fields(string(branch))[1])
+}
+
+func Rebase(path, branchName string) (ret []string, err error) {
 	var branches = Branches(path)
+	var branchRE = regexp.MustCompile(branchName)
+	var onto string
 
 	for _, branch := range branches {
 		if branch == "main" || branch == "master" {
@@ -37,6 +54,10 @@ func Rebase(path string) (ret []string, err error) {
 
 	for _, branch := range branches {
 		if branch == "main" || branch == "master" {
+			continue
+		}
+
+		if !branchRE.Match([]byte(branch)) {
 			continue
 		}
 

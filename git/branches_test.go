@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/MakeNowJust/heredoc"
@@ -24,8 +25,13 @@ func mkgit(commands []string) string {
 
 	fmt.Println(fmt.Sprintf("dir: %+v", dir))
 
+	fmt.Println(fmt.Sprintf("commands: %+v", commands))
+	//fmt.Println(fmt.Sprintf("commands[0]: %+v", commands[0]))
+
 	for _, command := range commands {
-		_, _ := bash.Run(command)
+		fmt.Println(fmt.Sprintf("command: %+v", command))
+
+		_, _ = bash.Run(command)
 	}
 	return dir
 }
@@ -74,10 +80,12 @@ func TestRebase(t *testing.T) {
 	var cases = []struct {
 		name   string
 		path   string
+		branch string
 		gitLog string
 	}{
 		{
-			name: "main ahead of feat1",
+			name:   "main ahead of feat1",
+			branch: ".*",
 			path: mkgit([]string{
 				"git init",
 				"git commit --allow-empty -m 'empty.commit'",
@@ -92,7 +100,8 @@ func TestRebase(t *testing.T) {
 				* .'empty.commit'`),
 		},
 		{
-			name: "feat1 ahead of feat1.1",
+			name:   "feat1 ahead of feat1.1",
+			branch: ".*",
 			path: mkgit([]string{
 				"git init",
 				"git commit --allow-empty -m 'empty.commit'",
@@ -113,7 +122,8 @@ func TestRebase(t *testing.T) {
 				* .'empty.commit'`),
 		},
 		{
-			name: "no changes",
+			name:   "no changes",
+			branch: ".*",
 			path: mkgit([]string{
 				"git init",
 				"git commit --allow-empty -m 'empty.commit'",
@@ -130,6 +140,40 @@ func TestRebase(t *testing.T) {
 				*  (main).'empty.commit1'
 				* .'empty.commit'`),
 		},
+		{
+			name:   "limit branch name",
+			branch: "feat1",
+			path: mkgit(strings.Split(heredoc.Doc(`
+				git init
+				git commit --allow-empty -m 'empty.commit'
+				git commit --allow-empty -m 'empty.commit1'
+				git checkout -b feat1
+				git commit --allow-empty -m 'feat1.commit'
+				git checkout -b feat1.1
+				git commit --allow-empty -m 'feat1.1.commit'
+				git checkout feat1
+				git commit --allow-empty -m 'feat1.commit1'
+				git checkout main
+				git checkout -b feat2
+				git commit --allow-empty -m 'feat2.commit1'
+				git checkout -b feat2.1
+				git commit --allow-empty -m 'feat2.1.commit1'
+				git checkout feat2
+				git commit --allow-empty -m 'feat2.commit2'`),
+				"\n")),
+			gitLog: heredoc.Doc(`
+				*  (HEAD -> feat1.1).'feat1.1.commit'
+				*  (feat1).'feat1.commit1'
+				* .'feat1.commit'
+				* .'empty.commit1'
+				| *  (feat2).'feat2.commit2'
+				| | *  (feat2.1).'feat2.1.commit1'
+				| |/  
+				| * .'feat2.commit1'
+				|/  
+				*  (main).'empty.commit1'
+				* .'empty.commit'`),
+		},
 	}
 
 	for _, test := range cases {
@@ -138,15 +182,18 @@ func TestRebase(t *testing.T) {
 			panic(err)
 		}
 
-		commands, err := Rebase(test.path)
+		commands, err := Rebase(test.path, test.branch)
 		if err != nil {
 			panic(err)
 		}
 
 		for _, command := range commands {
+			fmt.Println(fmt.Sprintf("command: %+v", command))
+
 			bash.Run(command)
 		}
 		stdout, _ := bash.Run(`git log --graph --pretty=format:%d.%s --all`)
 		assert.Equal(t, test.gitLog, stdout, test.name)
+		defer os.Remove(test.path)
 	}
 }

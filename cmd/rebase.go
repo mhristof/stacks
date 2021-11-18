@@ -19,8 +19,13 @@ var (
 				panic(err)
 			}
 
-			fmt.Println("rebasing (dry:", dry, ")")
-			commands, err := git.Rebase(".")
+			branch, err := cmd.Flags().GetString("branch")
+			if err != nil {
+				panic(err)
+			}
+
+			fmt.Println("rebasing (branch:", branch, ") (dry:", dry, ")")
+			commands, err := git.Rebase(".", branch)
 			if err != nil {
 				log.WithFields(log.Fields{
 					"err": err,
@@ -41,5 +46,6 @@ var (
 )
 
 func init() {
+	rebaseCmd.PersistentFlags().StringP("branch", "b", git.Branch("."), "Branch regex to match")
 	rootCmd.AddCommand(rebaseCmd)
 }
