@@ -12,7 +12,7 @@ var version = "devel"
 
 var rootCmd = &cobra.Command{
 	Use:     "go-stacks",
-	Short:   "Command like tool to handle git PR stacks ",
+	Short:   "Command like tool to handle git PR stacks",
 	Long:    `TODO: changeme`,
 	Version: version,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -20,7 +20,7 @@ var rootCmd = &cobra.Command{
 	},
 }
 
-// Verbose Increase verbosity
+// Verbose Increase verbosity.
 func Verbose(cmd *cobra.Command) {
 	verbose, err := cmd.Flags().GetBool("verbose")
 	if err != nil {
@@ -31,6 +31,7 @@ func Verbose(cmd *cobra.Command) {
 		log.SetLevel(log.DebugLevel)
 	}
 }
+
 func init() {
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "Increase verbosity")
 	rootCmd.PersistentFlags().BoolP("dryrun", "n", false, "Dry run")
