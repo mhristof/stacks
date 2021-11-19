@@ -40,7 +40,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolP("dryrun", "n", false, "Dry run")
 }
 
-// Execute The main function for the root command
+// Execute The main function for the root command.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)

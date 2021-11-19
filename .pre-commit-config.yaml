@@ -57,3 +57,7 @@ repos:
           - -ci
         types:
           - shell
+  - repo: https://github.com/mhristof/pre-commit-golang/
+    rev: v0.1.0
+    hooks:
+      - id: gofumpt
