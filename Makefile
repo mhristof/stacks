@@ -18,13 +18,13 @@ help:  ## Show this help
 test:  ## Run go test
 	go test -v ./...
 
-bin/go-stacks.darwin:  ## Build the application binary for current OS
+bin/stacks.darwin:  ## Build the application binary for current OS
 
-bin/go-stacks.%:  ## Build the application binary for target OS, for example bin/go-stacks.linux
+bin/stacks.%:  ## Build the application binary for target OS, for example bin/stacks.linux
 	GOOS=$* go build -o $@ -ldflags "-X $(PACKAGE)/version=$(GIT_TAG)+$(GIT_REF)" main.go
 
 .PHONY: install
-install: bin/go-stacks.darwin ## Install the binary
+install: bin/stacks.darwin ## Install the binary
 	cp $< ~/bin/stacks
 
 .git/hooks/pre-commit:  ## Install pre-commit checks

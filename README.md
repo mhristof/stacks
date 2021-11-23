@@ -1,4 +1,4 @@
-# go-stacks
+# stacks
 
 Handle PR stack updates in git.
 
@@ -28,10 +28,10 @@ If you repo looks like this
 it means that your feat1 and feat1.1 branches are not based from the latest main.
 
 To solve this, you could start rebasing by your self, or you could try the dry
-run of `go-stacks`
+run of `stacks`
 
 ```shell
-$ go-stacks.darwin rebase -n
+$ stacks.darwin rebase -n
 rebasing (branch: feat1.1 ) (dry: true )
 command: git checkout feat1
 command: git rebase --onto main main@{1}
@@ -43,7 +43,7 @@ which will print out what commands are going to be executed and then pull the
 trigger with
 
 ```shell
-$ go-stacks.darwin rebase
+$ stacks.darwin rebase
 rebasing (branch: feat1.1 ) (dry: false )
 command: git checkout feat1
 command: git rebase --onto main main@{1}

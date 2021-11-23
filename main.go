@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/mhristof/go-stacks/cmd"
+	"github.com/mhristof/stacks/cmd"
 )
 
 func main() {

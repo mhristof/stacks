@@ -13,7 +13,7 @@ var (
 		Use:   "update",
 		Short: "Update the binary with a new version",
 		Run: func(cmd *cobra.Command, args []string) {
-			url := fmt.Sprintf("https://github.com/mhristof/go-stacks/releases/latest/download/go-stacks.%s", runtime.GOOS)
+			url := fmt.Sprintf("https://github.com/mhristof/stacks/releases/latest/download/stacks.%s", runtime.GOOS)
 			updates, updateFunc, err := update.Check(url)
 			if err != nil {
 				panic(err)

@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/mhristof/go-stacks/bash"
-	"github.com/mhristof/go-stacks/git"
+	"github.com/mhristof/stacks/bash"
+	"github.com/mhristof/stacks/git"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

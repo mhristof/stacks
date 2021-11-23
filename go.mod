@@ -1,4 +1,4 @@
-module github.com/mhristof/go-stacks
+module github.com/mhristof/stacks
 
 go 1.14
 

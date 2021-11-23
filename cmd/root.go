@@ -12,7 +12,7 @@ import (
 var version = "devel"
 
 var rootCmd = &cobra.Command{
-	Use:   "go-stacks",
+	Use:   "stacks",
 	Short: "Command like tool to handle git PR stacks",
 	Long: heredoc.Doc(`
 		Auto rebase branches to allow better management of PR stacks

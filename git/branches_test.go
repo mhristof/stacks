@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/MakeNowJust/heredoc"
-	"github.com/mhristof/go-stacks/bash"
+	"github.com/mhristof/stacks/bash"
 	"github.com/stretchr/testify/assert"
 )
 
