@@ -1,0 +1,21 @@
+{
+  "commit": "1090ef01ca7d85fb201c6b6f3dfdbb0a3c89125a",
+  "context": {
+    "cookiecutter": {
+      "_extensions": [
+        "jinja2_time.TimeExtension"
+      ],
+      "_template": "git@github.com:mhristof/cookiecutter-golang-cmd.git",
+      "email": "mhristof@gmail.com",
+      "full_name": "Mike Christof",
+      "github_username": "mhristof",
+      "project_name": "go-stacks",
+      "project_short_description": "Command line tool to manage PR stacks",
+      "project_slug": "go-stacks",
+      "release_date": "2021-11-23",
+      "version": "0.1.0"
+    }
+  },
+  "directory": null,
+  "template": "git@github.com:mhristof/cookiecutter-golang-cmd.git"
+}

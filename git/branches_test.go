@@ -33,7 +33,7 @@ func mkgit(t *testing.T, commands []string) string {
 }
 
 func TestBranches(t *testing.T) {
-	var cases = []struct {
+	cases := []struct {
 		name     string
 		branches []string
 		path     string
@@ -73,7 +73,7 @@ func TestBranches(t *testing.T) {
 }
 
 func TestRebase(t *testing.T) {
-	var cases = []struct {
+	cases := []struct {
 		name   string
 		path   string
 		branch string
