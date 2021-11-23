@@ -14,7 +14,7 @@ builds:
       - linux
       - darwin
     ldflags:
-      - -X github.com/mhristof/go-stacks/cmd.version={{.Version}}
+      - -X github.com/mhristof/stacks/cmd.version={{.Version}}
 archives:
   - replacements:
       darwin: Darwin
